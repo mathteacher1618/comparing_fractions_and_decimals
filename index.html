@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>比較分數與小數 - 香港小學數學</title>
+  <!-- 引入 html2canvas 程式庫以支援報告圖片下載 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* 全局樣式與 iPad 觸控優化 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      touch-action: manipulation;
+    }
+
+    header {
+      background-color: #2b5278;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .lang-btn {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .lang-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #2b5278;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card:hover, .card:active {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-color: #4a90e2;
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      color: #1a365d;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .quiz-wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .back-nav-btn {
+      background: white;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .back-nav-btn:hover {
+      background-color: #edf2f7;
+      color: #2b6cb0;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 12px;
+    }
+
+    .quiz-progress {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #3182ce;
+    }
+
+    .unit-tag {
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .difficulty-tag {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .diff-easy { background-color: #c6f6d5; color: #22543d; }
+    .diff-medium { background-color: #feebc8; color: #744210; }
+    .diff-hard { background-color: #fed7d7; color: #9b2c2c; }
+    .diff-star { background-color: #e9d8fd; color: #553c9a; }
+
+    .q-prompt {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #2d3748;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .interaction-area {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e0;
+      border-radius: 12px;
+      padding: 25px 15px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      min-height: 150px;
+      justify-content: center;
+    }
+
+    /* 分數顯示樣式 */
+    .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 4px;
+      font-size: 0.85em;
+      font-weight: bold;
+      line-height: 1.1;
+    }
+    .fraction .numerator {
+      border-bottom: 2px solid currentColor;
+      padding-bottom: 2px;
+    }
+    .fraction .denominator {
+      padding-top: 2px;
+    }
+    .mixed-fraction {
+      display: inline-flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1em;
+    }
+    .mixed-whole {
+      margin-right: 4px;
+      font-size: 1em;
+    }
+    .dec-val {
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    /* 初階：比較大小 */
+    .compare-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-size: 1.6rem;
+    }
+    .compare-val {
+      background: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      min-width: 100px;
+      text-align: center;
+    }
+    .compare-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid #cbd5e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #3182ce;
+      background: white;
+    }
+    .mc-row-symbols {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .symbol-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .symbol-btn:hover { border-color: #3182ce; background: #ebf8ff; color: #2b6cb0; }
+    .symbol-btn.selected { border-color: #3182ce; background: #3182ce; color: white; }
+
+    /* 中階：排序 */
+    .sort-area { width: 100%; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+    .sort-slots { display: flex; gap: 15px; align-items: center; }
+    .sort-slot {
+      width: 90px;
+      height: 70px;
+      border: 2px dashed #a0aec0;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #edf2f7;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sort-slot.filled {
+      border: 2px solid #4a5568;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .sort-symbol { font-size: 1.5rem; font-weight: bold; color: #718096; }
+    
+    .sort-sources { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+    .sort-source-btn {
+      padding: 12px 20px;
+      min-width: 80px;
+      font-size: 1.2rem;
+      background: white;
+      border: 2px solid #cbd5e0;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.1s, border-color 0.2s;
+    }
+    .sort-source-btn:active { transform: scale(0.95); }
+    .sort-source-btn.used {
+      opacity: 0.35;
+      cursor: pointer;
+    }
+    .reset-sort-btn {
+      background: transparent;
+      color: #e53e3e;
+      border: none;
+      font-size: 0.95rem;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* 高階/星級：多選 */
+    .mc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      width: 100%;
+      max-width: 500px;
+    }
+    .mc-btn {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 15px 10px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70px;
+    }
+    .mc-btn:hover { border-color: #3182ce; background: #ebf8ff; }
+    .mc-btn.selected { border-color: #3182ce; background: #3182ce; color: white; }
+
+    /* 通用按鈕 */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-align: center;
+      min-height: 48px;
+    }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background-color: #3182ce; color: white; }
+    .btn-primary:hover:not(:disabled) { background-color: #2b6cb0; }
+    .btn-success { background-color: #38a169; color: white; }
+    .btn-success:hover { background-color: #2f855a; }
+    .btn-purple { background-color: #8e44ad; color: white; margin-bottom: 10px; }
+    .btn-sky { background-color: #38bdf8; color: white; margin-bottom: 10px; }
+    .btn-gray { background-color: #7f8c8d; color: white; }
+
+    /* 反饋與提示訊息 */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 1rem;
+    }
+    .feedback-success { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; text-align: center; }
+    .feedback-warning { background-color: #fffdf0; color: #744210; border: 1.5px solid #fef08a; box-shadow: 0 2px 8px rgba(234, 179, 8, 0.1); }
+    .feedback-danger { background-color: #fff5f5; color: #9b2c2c; border: 1.5px solid #feb2b2; }
+
+    .notebook-card {
+      background-color: #ffffff;
+      border: 2px dashed #4a90e2;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .notebook-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2b6cb0;
+      margin-bottom: 10px;
+      width: 100%;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
+    .solution-steps { font-size: 0.95rem; line-height: 1.8; width: 100%; }
+
+    /* 報告區塊 */
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .report-title { text-align: center; color: #3182ce; font-size: 1.5rem; margin-bottom: 20px; font-weight: bold; }
+    .report-section { background-color: #f8fafc; border-radius: 8px; padding: 12px 20px; margin-bottom: 15px; }
+    .report-row { display: flex; justify-content: space-between; padding: 6px 0; color: #4a5568; font-size: 0.95rem; }
+    .report-row.dashed { border-bottom: 1px dashed #cbd5e0; }
+    .report-val { font-weight: bold; }
+    .val-green { color: #276749; }
+    .val-red { color: #9b2c2c; }
+    .val-blue { color: #0284c7; }
+    .section-label { font-weight: bold; color: #2d3748; margin: 15px 0 10px 0; font-size: 1rem; }
+    .list-box { border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f7fafc; }
+    .list-title { font-weight: bold; font-size: 1.05rem; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .item-card {
+      border-radius: 8px; padding: 10px 16px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; font-weight: 500;
+    }
+    .item-card-correct { background: #f0fff4; border: 1px solid #c6f6d5; color: #22543d; }
+    .item-card-wrong { background: #fff5f5; border: 1px solid #fed7d7; color: #9b2c2c; flex-direction: column; align-items: flex-start; gap: 5px;}
+    .item-card:last-child { margin-bottom: 0; }
+    .item-q-title { font-weight: bold; }
+
+    /* 答錯搖一搖動畫與紅色標示 */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .wrong-selected {
+      border-color: #e53e3e !important;
+      background-color: #fff5f5 !important;
+      color: #c53030 !important;
+      opacity: 0.6 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+    .compare-circle.wrong-selected {
+      border-color: #e53e3e !important;
+      color: #c53030 !important;
+      background-color: #fff5f5 !important;
+      opacity: 1 !important;
+    }
+
+    .correct-selected {
+      border-color: #38a169 !important;
+      background-color: #f0fff4 !important;
+      color: #276749 !important;
+      font-weight: bold !important;
+    }
+    .compare-circle.correct-selected {
+      border-color: #38a169 !important;
+      background-color: #f0fff4 !important;
+      color: #276749 !important;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      .compare-val { font-size: 1.3rem; padding: 12px; min-width: 80px; }
+      .sort-slot { width: 75px; height: 60px; font-size: 1rem;}
+      .mc-grid { grid-template-columns: 1fr; }
+      .mc-btn { min-height: 50px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="header-title">比較分數與小數</h1>
+    <button id="lang-toggle-btn" class="lang-btn" onclick="toggleLanguage()">English</button>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- 首頁 -->
+      <div id="page-home">
+        <h2 id="home-subtitle" class="page-title">請選擇學習單元</h2>
+        <div class="menu-grid">
+          <div class="card" onclick="startQuiz()">
+            <h3 id="unit1-card-title">單元一：比較分數與小數</h3>
+            <p id="desc-opt1">透過不同難度的題型，學習如何轉換並比較分數與小數的大小。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 測驗頁面 -->
+      <div id="page-quiz" class="hidden">
+        <div class="quiz-wrapper">
+          <button class="back-nav-btn" onclick="goHome()">
+            <span id="lbl-back-btn">← 返回單元選擇</span>
+          </button>
+
+          <div class="quiz-card">
+            <div class="quiz-header">
+              <div>
+                <span id="quiz-mode-name" class="unit-tag">比較分數與小數</span>
+                <span id="quiz-diff-tag" class="difficulty-tag diff-easy">初階</span>
+              </div>
+              <span id="quiz-progress-text" class="quiz-progress">題目 1 / 10</span>
+            </div>
+
+            <div id="q-prompt" class="q-prompt">在圓圈內填上 >、< 或 =</div>
+
+            <div id="interaction-area" class="interaction-area">
+              <!-- 動態內容將插入此處 -->
+            </div>
+
+            <div id="action-area" style="margin-top: 25px;">
+              <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()" disabled>提交答案</button>
+              <button id="btn-next" class="btn btn-success hidden" onclick="nextQuestion()">再答一題 ➔</button>
+            </div>
+
+            <div id="feedback-area" class="feedback-box hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 報告頁面 -->
+      <div id="page-report" class="hidden">
+        <div id="report-card-to-capture" class="report-card">
+          <h2 id="report-main-title" class="report-title">練習完成！表現分析報告</h2>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-start-time">開始時間：</span><span id="val-start-time" class="report-val">--</span>
+            </div>
+            <div class="report-row dashed">
+              <span id="lbl-end-time">完成時間：</span><span id="val-end-time" class="report-val">--</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-duration">總用時：</span><span id="val-duration" class="report-val val-blue">--</span>
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-total-correct">總答對題數：</span><span id="val-correct-count" class="report-val val-green">0 / 10</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-accuracy">整體正確率：</span><span id="val-accuracy" class="report-val">0%</span>
+            </div>
+          </div>
+
+          <div class="list-box">
+            <div class="list-title val-green"><span>☑</span> <span id="lbl-correct-title">答對的題目</span></div>
+            <div id="correct-list-container"></div>
+          </div>
+
+          <div class="list-box">
+            <div class="list-title val-red"><span>✕</span> <span id="lbl-wrong-title">答錯 / 需要協助的題目</span></div>
+            <div id="wrong-list-container"></div>
+          </div>
+
+          <div data-html2canvas-ignore="true" style="margin-top: 20px;">
+            <button class="btn btn-purple" onclick="downloadReportImage()"><span id="lbl-btn-download">💾 下載報告圖片</span></button>
+            <button class="btn btn-sky" onclick="startQuiz()"><span id="lbl-btn-retry">🔄 我想再試</span></button>
+            <button class="btn btn-gray" onclick="goHome()"><span id="lbl-btn-home">回到主頁重新選擇</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // 多語言設定
+    const i18n = {
+      zh: {
+        title: "比較分數與小數",
+        langBtn: "English",
+        homeSub: "請選擇學習單元",
+        unitTitle: "單元一：比較分數與小數",
+        unitDesc: "透過不同難度的題型，學習如何轉換並比較分數與小數的大小。",
+        back: "← 返回單元選擇",
+        qProg: "題目 {n} / 10",
+        submit: "提交答案",
+        next: "再答一題 ➔",
+        diff: { easy: "初階", medium: "中階", hard: "高階", star: "星級" },
+        prompts: {
+          easy: "在圓圈內填上 >、< 或 =",
+          mediumAsc: "將以下數值由 最小 至 最大 排列：",
+          mediumDesc: "將以下數值由 最大 至 最小 排列：",
+          hardMin: "選出數值 最小 的選項：",
+          hardMax: "選出數值 最大 的選項：",
+          starNear1: "選出數值 最接近 1 的選項："
+        },
+        praise: ["太棒了！答對了！🌟", "分析得非常出色！👏", "答對了！邏輯清晰！🎉", "真聰明！💪"],
+        encourage: ["再試一次！試著將分數化為小數再比較。", "沒關係，仔細觀察數值，你可以的！", "加油！先找出明顯最大或最小的數。"],
+        stepTitle: "解題思路：",
+        resetOrder: "↺ 重新排序",
+        reportTitle: "練習完成！表現分析報告",
+        startTime: "開始時間：", endTime: "完成時間：", duration: "總用時：",
+        totCorrect: "總答對題數：", accuracy: "整體正確率：",
+        correctTitle: "答對的題目", wrongTitle: "答錯 / 需要協助的題目",
+        yourAns: "你的回答：", correctAns: "正確答案：",
+        btnDL: "💾 下載報告圖片", btnRetry: "🔄 我想再試", btnHome: "回到主頁重新選擇",
+        prevAnswerWrong: "上次回答 (不正確)：",
+        attempt: "嘗試",
+        maxAttemptsMsg: "已嘗試 2 次，請參考詳解："
+      },
+      en: {
+        title: "Fractions & Decimals",
+        langBtn: "繁體中文",
+        homeSub: "Select a Unit",
+        unitTitle: "Unit 1: Comparing Fractions & Decimals",
+        unitDesc: "Learn to convert and compare fractions and decimals across different difficulties.",
+        back: "← Back to Unit Selection",
+        qProg: "Question {n} / 10",
+        submit: "Submit Answer",
+        next: "Next Question ➔",
+        diff: { easy: "Basic", medium: "Intermediate", hard: "Advanced", star: "Challenge" },
+        prompts: {
+          easy: "Select >, < or = for the circle:",
+          mediumAsc: "Arrange the numbers from Smallest to Greatest:",
+          mediumDesc: "Arrange the numbers from Greatest to Smallest:",
+          hardMin: "Which of the following has the smallest value?",
+          hardMax: "Which of the following has the greatest value?",
+          starNear1: "Which of the following has its value nearest to 1?"
+        },
+        praise: ["Great job! Correct! 🌟", "Awesome analysis! 👏", "Correct! Clear logic! 🎉", "Smart! 💪"],
+        encourage: ["Try again! Convert fractions to decimals to compare.", "It's okay, observe the numbers carefully!", "Keep going! Find the obvious smallest/largest first."],
+        stepTitle: "Solution Logic:",
+        resetOrder: "↺ Reset Order",
+        reportTitle: "Practice Complete! Report",
+        startTime: "Start Time:", endTime: "End Time:", duration: "Duration:",
+        totCorrect: "Total Correct:", accuracy: "Overall Accuracy:",
+        correctTitle: "Correct Questions", wrongTitle: "Incorrect / Needs Review",
+        yourAns: "Your Ans: ", correctAns: "Correct Ans: ",
+        btnDL: "💾 Download Image", btnRetry: "🔄 Try Again", btnHome: "Back to Home",
+        prevAnswerWrong: "Previous answer (Incorrect): ",
+        attempt: "Attempt",
+        maxAttemptsMsg: "Attempted 2 times. Here is the solution:"
+      }
+    };
+
+    let currentLang = 'zh';
+    let questions = [];
+    let currentQIndex = 0;
+    let records = [];
+    let wrongAttempts = 0;
+    let startTimeObj = null;
+    let userSelection = null; // 用於儲存使用者的答案 (字串、陣列等)
+
+    // 數學工具函數
+    function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+    
+    function createFraction(whole, num, den) {
+      if(num === 0) return { type: 'int', val: whole, str: whole.toString() };
+      let g = gcd(num, den);
+      let n = num/g, d = den/g;
+      let val = whole + (n/d);
+      return { type: 'frac', whole, n, d, val };
+    }
+
+    function generateRandomFraction(minVal, maxVal, specificDenoms = null) {
+      const denoms = specificDenoms || [2, 3, 4, 5, 8, 10, 20, 25];
+      let frac = null;
+      let attempts = 0;
+      while(!frac && attempts < 100) {
+        attempts++;
+        let d = denoms[Math.floor(Math.random() * denoms.length)];
+        let w = Math.random() > 0.5 ? Math.floor(minVal) : Math.floor(maxVal);
+        let n = Math.floor(Math.random() * (d - 1)) + 1;
+        let val = w + (n/d);
+        if (val >= minVal && val <= maxVal) {
+          frac = createFraction(w, n, d);
+        }
+      }
+      if (!frac) {
+         let w = Math.floor(minVal);
+         frac = createFraction(w, 1, 2);
+      }
+      return frac;
+    }
+
+    function generateDecimal(minVal, maxVal, decimals = 2) {
+      let val = Math.random() * (maxVal - minVal) + minVal;
+      let mul = Math.pow(10, decimals);
+      val = Math.round(val * mul) / mul;
+      return { type: 'dec', val: val, str: val.toString() };
+    }
+
+    function formatNumberObj(obj) {
+      if (obj.type === 'dec' || obj.type === 'int') return `<span class="dec-val">${obj.str}</span>`;
+      let html = '';
+      if (obj.whole > 0) html += `<span class="mixed-whole">${obj.whole}</span>`;
+      html += `<span class="fraction"><span class="numerator">${obj.n}</span><span class="denominator">${obj.d}</span></span>`;
+      if (obj.whole > 0) return `<span class="mixed-fraction">${html}</span>`;
+      return html;
+    }
+    
+    function numObjToStr(obj) {
+        if(obj.type === 'dec' || obj.type === 'int') return obj.str;
+        return obj.whole > 0 ? `${obj.whole} ${obj.n}/${obj.d}` : `${obj.n}/${obj.d}`;
+    }
+
+    // 生成題目邏輯
+    function generateQuestions() {
+      questions = [];
+      const usedSigs = new Set();
+      
+      const addToQuestions = (q) => {
+        let sig = q.items.map(i => i.val).join('|');
+        if(!usedSigs.has(sig)) {
+          usedSigs.add(sig);
+          questions.push(q);
+          return true;
+        }
+        return false;
+      };
+
+      // 1. 初階 (3題): 比較2數 (<0.2差距)
+      while(questions.length < 3) {
+        let base = Math.floor(Math.random() * 5) + 1; // 1-5
+        let frac1 = generateRandomFraction(base, base + 0.9, [2, 4, 5, 8, 10, 20, 25]);
+        let item2;
+        let isDec = Math.random() > 0.3;
+        
+        if (isDec) {
+            let offset = (Math.random() * 0.3) - 0.15; // -0.15 to 0.15
+            let decVal = Math.round((frac1.val + offset) * 100) / 100;
+            if(decVal === frac1.val) decVal += 0.02;
+            if(decVal < 0) decVal = 0.01;
+            item2 = { type: 'dec', val: decVal, str: decVal.toString() };
+        } else {
+            let minV = Math.max(0.1, frac1.val - 0.15);
+            let maxV = frac1.val + 0.15;
+            item2 = generateRandomFraction(minV, maxV, [2, 4, 5, 8, 10, 20, 25]);
+            let attempts = 0;
+            while(item2.val === frac1.val && attempts < 10) {
+                item2 = generateRandomFraction(minV, maxV, [2, 4, 5, 8, 10, 20, 25]);
+                attempts++;
+            }
+        }
+
+        if (Math.abs(frac1.val - item2.val) <= 0.2 && frac1.val !== item2.val) {
+            let ans = frac1.val < item2.val ? '<' : (frac1.val > item2.val ? '>' : '=');
+            addToQuestions({
+                level: 'easy', type: 'compare2',
+                items: [frac1, item2], ans: ans
+            });
+        }
+      }
+
+      // 2. 中階 (3題): 排序3數 (1個明顯不同，2個相近)
+      let medAscCount = 0;
+      while(questions.length < 6) {
+        let base = Math.floor(Math.random() * 4) + 2; // 2-5
+        let f1 = generateRandomFraction(base + 0.3, base + 0.7);
+        let i2 = Math.random() > 0.5 ? generateRandomFraction(base + 0.3, base + 0.7) : generateDecimal(base + 0.3, base + 0.7, 2);
+        
+        // 確保不相等
+        let attempt = 0;
+        while(Math.abs(f1.val - i2.val) < 0.01 && attempt < 10) { 
+            i2 = generateDecimal(base+0.3, base+0.7, 2); 
+            attempt++;
+        }
+        
+        // 產生一個離群值 (整數部分不同或差距 > 0.5)
+        let i3 = Math.random() > 0.5 ? generateRandomFraction(base - 1, base + 0.1) : generateDecimal(base + 0.8, base + 1.5, 1);
+        
+        let items = [f1, i2, i3].sort(() => Math.random() - 0.5); // 打亂顯示順序
+        let isAsc = medAscCount < 2; // 2題小至大，1題大至小
+        let sortedItems = [...items].sort((a,b) => isAsc ? a.val - b.val : b.val - a.val);
+        let ans = sortedItems.map(i => numObjToStr(i)).join(',');
+
+        if(addToQuestions({
+            level: 'medium', type: 'order3', isAsc: isAsc,
+            items: items, sortedItems: sortedItems, ans: ans
+        })) {
+            medAscCount++;
+        }
+      }
+
+      // 3. 高階 (2題): 4選1 (3分數1小數) 找最大/最小
+      while(questions.length < 8) {
+        let base = Math.floor(Math.random() * 3) + 3;
+        let items = [
+            generateRandomFraction(base, base+0.9),
+            generateRandomFraction(base, base+0.9, [3,7,9,11,13]), // 較難的分母
+            generateRandomFraction(base, base+0.9),
+            generateDecimal(base, base+0.9, 2)
+        ].sort(() => Math.random() - 0.5);
+        
+        let isMin = questions.length % 2 === 0;
+        let targetVal = isMin ? Math.min(...items.map(i=>i.val)) : Math.max(...items.map(i=>i.val));
+        let ansObj = items.find(i => i.val === targetVal);
+
+        addToQuestions({
+            level: 'hard', type: 'pick1', isMin: isMin,
+            items: items, ans: numObjToStr(ansObj), ansObj: ansObj
+        });
+      }
+
+      // 4. 星級 (2題): 4選1，最接近1
+      while(questions.length < 10) {
+        let items = [
+            generateRandomFraction(0.7, 1.3, [7,8,9,11,12]),
+            generateRandomFraction(0.7, 1.3, [5,6,10]),
+            generateRandomFraction(0.8, 1.2),
+            generateDecimal(0.75, 1.25, 2)
+        ].sort(() => Math.random() - 0.5);
+
+        let diffs = items.map(i => Math.abs(i.val - 1));
+        let minDiff = Math.min(...diffs);
+        let ansObj = items.find(i => Math.abs(i.val - 1) === minDiff);
+
+        addToQuestions({
+            level: 'star', type: 'near1',
+            items: items, ans: numObjToStr(ansObj), ansObj: ansObj
+        });
+      }
+    }
+
+    // UI 渲染邏輯
+    function startQuiz() {
+      generateQuestions();
+      currentQIndex = 0;
+      records = [];
+      startTimeObj = new Date();
+
+      // 確保移除 shake 類別，避免進單元時誤觸搖一搖
+      const quizCard = document.querySelector('.quiz-card');
+      if (quizCard) quizCard.classList.remove('shake');
+
+      document.getElementById('page-home').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-quiz').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.add('hidden'); // 答題中隱藏切換語言
+      
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      wrongAttempts = 0;
+      userSelection = null;
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+
+      const quizCard = document.querySelector('.quiz-card');
+      if (quizCard) quizCard.classList.remove('shake');
+
+      document.getElementById('feedback-area').classList.add('hidden');
+      document.getElementById('btn-submit').classList.remove('hidden');
+      document.getElementById('btn-submit').innerText = t.submit;
+      document.getElementById('btn-submit').disabled = true;
+      document.getElementById('btn-next').classList.add('hidden');
+      document.getElementById('btn-next').innerText = t.next;
+
+      document.getElementById('quiz-progress-text').innerText = t.qProg.replace('{n}', currentQIndex + 1);
+      
+      const diffTag = document.getElementById('quiz-diff-tag');
+      diffTag.className = `difficulty-tag diff-${q.level}`;
+      diffTag.innerText = t.diff[q.level];
+
+      const promptEl = document.getElementById('q-prompt');
+      const area = document.getElementById('interaction-area');
+      area.innerHTML = '';
+
+      if (q.level === 'easy') {
+          promptEl.innerText = t.prompts.easy;
+          area.innerHTML = `
+            <div class="compare-container">
+                <div class="compare-val">${formatNumberObj(q.items[0])}</div>
+                <div id="compare-circle" class="compare-circle">?</div>
+                <div class="compare-val">${formatNumberObj(q.items[1])}</div>
+            </div>
+            <div class="mc-row-symbols">
+                <button class="symbol-btn" onclick="selectSymbol('>')">></button>
+                <button class="symbol-btn" onclick="selectSymbol('=')">=</button>
+                <button class="symbol-btn" onclick="selectSymbol('<')"><</button>
+            </div>
+          `;
+      } else if (q.level === 'medium') {
+          promptEl.innerText = q.isAsc ? t.prompts.mediumAsc : t.prompts.mediumDesc;
+          const arrow = q.isAsc ? '<' : '>';
+          area.innerHTML = `
+            <div class="sort-area">
+                <div class="sort-slots" id="sort-slots">
+                    <div class="sort-slot" data-index="0" onclick="clickSortSlot(0)"></div>
+                    <div class="sort-symbol">${arrow}</div>
+                    <div class="sort-slot" data-index="1" onclick="clickSortSlot(1)"></div>
+                    <div class="sort-symbol">${arrow}</div>
+                    <div class="sort-slot" data-index="2" onclick="clickSortSlot(2)"></div>
+                </div>
+                <div class="sort-sources" id="sort-sources">
+                    ${q.items.map((item, idx) => `
+                        <button class="sort-source-btn" data-id="${idx}" data-valstr="${numObjToStr(item)}" onclick="selectSortItem(this, ${idx})">
+                            ${formatNumberObj(item)}
+                        </button>
+                    `).join('')}
+                </div>
+                <button class="reset-sort-btn" onclick="resetSort()">${t.resetOrder}</button>
+            </div>
+          `;
+          userSelection = [];
+      } else {
+          // Hard & Star (MC 4 options)
+          if(q.level === 'hard') promptEl.innerText = q.isMin ? t.prompts.hardMin : t.prompts.hardMax;
+          else promptEl.innerText = t.prompts.starNear1;
+
+          area.innerHTML = `
+            <div class="mc-grid">
+                ${q.items.map((item, idx) => `
+                    <button class="mc-btn" onclick="selectMcOption(this, '${numObjToStr(item)}')">
+                        ${formatNumberObj(item)}
+                    </button>
+                `).join('')}
+            </div>
+          `;
+      }
+    }
+
+    // 互動處理
+    function selectSymbol(sym) {
+        if(wrongAttempts >= 2 || (event && event.currentTarget && event.currentTarget.classList.contains('wrong-selected'))) return;
+        userSelection = sym;
+        const circle = document.getElementById('compare-circle');
+        circle.innerText = sym;
+        circle.classList.remove('wrong-selected');
+        
+        document.querySelectorAll('.symbol-btn').forEach(b => {
+            b.classList.remove('selected');
+        });
+        const targetBtn = event ? (event.currentTarget || event.target) : null;
+        if(targetBtn) targetBtn.classList.add('selected');
+        document.getElementById('btn-submit').disabled = false;
+    }
+
+    function selectSortItem(btn, idx) {
+        if (wrongAttempts >= 2) return;
+        
+        // 若該數字已被選取，再次點擊即可重置/取消選取
+        if (btn.classList.contains('used')) {
+            removeSortItemBySourceId(idx);
+            return;
+        }
+
+        document.querySelectorAll('.sort-slot').forEach(s => s.classList.remove('wrong-selected'));
+
+        let q = questions[currentQIndex];
+        let item = q.items[idx];
+        let htmlStr = formatNumberObj(item);
+        
+        let slots = document.querySelectorAll('.sort-slot');
+        let emptySlot = Array.from(slots).find(s => !s.classList.contains('filled'));
+        
+        if (emptySlot) {
+            emptySlot.innerHTML = htmlStr;
+            emptySlot.classList.add('filled');
+            emptySlot.dataset.sourceId = idx;
+            btn.classList.add('used');
+            
+            updateSortSelectionAndSubmit(q);
+        }
+    }
+
+    function removeSortItemBySourceId(sourceId) {
+        if (wrongAttempts >= 2) return;
+        let slot = document.querySelector(`.sort-slot[data-source-id="${sourceId}"]`);
+        if (slot) {
+            clearSortSlot(slot);
+        }
+    }
+
+    function clickSortSlot(slotIdx) {
+        if (wrongAttempts >= 2) return;
+        let slot = document.querySelector(`.sort-slot[data-index="${slotIdx}"]`);
+        if (slot && slot.dataset.sourceId !== undefined) {
+            clearSortSlot(slot);
+        }
+    }
+
+    function clearSortSlot(slot) {
+        let sourceId = slot.dataset.sourceId;
+        slot.innerHTML = '';
+        slot.classList.remove('filled', 'wrong-selected', 'correct-selected');
+        delete slot.dataset.sourceId;
+        
+        if (sourceId !== undefined) {
+            let btn = document.querySelector(`.sort-source-btn[data-id="${sourceId}"]`);
+            if (btn) btn.classList.remove('used');
+        }
+
+        let q = questions[currentQIndex];
+        updateSortSelectionAndSubmit(q);
+    }
+
+    function updateSortSelectionAndSubmit(q) {
+        userSelection = [];
+        let slots = document.querySelectorAll('.sort-slot');
+        slots.forEach(s => {
+            if (s.classList.contains('filled') && s.dataset.sourceId !== undefined) {
+                let itemIdx = parseInt(s.dataset.sourceId, 10);
+                let item = q.items[itemIdx];
+                if (item) {
+                    userSelection.push(numObjToStr(item));
+                }
+            }
+        });
+
+        if (userSelection.length === 3) {
+            const currentSeq = userSelection.join(',');
+            if (q.failedOrders && q.failedOrders.includes(currentSeq)) {
+                document.getElementById('btn-submit').disabled = true;
+            } else {
+                document.getElementById('btn-submit').disabled = false;
+            }
+        } else {
+            document.getElementById('btn-submit').disabled = true;
+        }
+    }
+
+    function resetSort() {
+        if(wrongAttempts >= 2) return;
+        userSelection = [];
+        document.querySelectorAll('.sort-slot').forEach(s => {
+            s.innerHTML = '';
+            s.classList.remove('filled', 'wrong-selected');
+            delete s.dataset.sourceId;
+        });
+        document.querySelectorAll('.sort-source-btn').forEach(b => b.classList.remove('used'));
+        document.getElementById('btn-submit').disabled = true;
+    }
+
+    function selectMcOption(btn, valStr) {
+        if(wrongAttempts >= 2 || btn.classList.contains('wrong-selected')) return;
+        userSelection = valStr;
+        document.querySelectorAll('.mc-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('btn-submit').disabled = false;
+    }
+
+    function highlightWrongSelection(q) {
+        if (q.type === 'compare2') {
+            const selectedBtn = document.querySelector('.symbol-btn.selected');
+            if (selectedBtn) {
+                selectedBtn.classList.remove('selected');
+                selectedBtn.classList.add('wrong-selected');
+            }
+            const circle = document.getElementById('compare-circle');
+            if (circle) circle.classList.add('wrong-selected');
+        } else if (q.type === 'order3') {
+            q.failedOrders = q.failedOrders || [];
+            q.failedOrders.push(userSelection.join(','));
+        } else {
+            const selectedBtn = document.querySelector('.mc-btn.selected');
+            if (selectedBtn) {
+                selectedBtn.classList.remove('selected');
+                selectedBtn.classList.add('wrong-selected');
+            }
+        }
+    }
+
+    // 顯示正確答案（綠色樣式/排序）
+    function showCorrectAnswerUI(q) {
+        if (q.type === 'compare2') {
+            const circle = document.getElementById('compare-circle');
+            if (circle) {
+                circle.innerText = q.ans;
+                circle.className = 'compare-circle correct-selected';
+            }
+            document.querySelectorAll('.symbol-btn').forEach(b => {
+                if (b.innerText.trim() === q.ans) {
+                    b.classList.remove('wrong-selected', 'selected');
+                    b.classList.add('correct-selected');
+                }
+            });
+        } else if (q.type === 'order3') {
+            const slots = document.querySelectorAll('.sort-slot');
+            slots.forEach((slot, idx) => {
+                if (q.sortedItems[idx]) {
+                    slot.innerHTML = formatNumberObj(q.sortedItems[idx]);
+                    slot.className = 'sort-slot filled correct-selected';
+                }
+            });
+            document.querySelectorAll('.sort-source-btn').forEach(b => b.classList.add('used'));
+        } else {
+            document.querySelectorAll('.mc-btn').forEach(b => {
+                const onclickAttr = b.getAttribute('onclick') || '';
+                const match = onclickAttr.match(/'([^']+)'/);
+                if (match && match[1] === q.ans) {
+                    b.classList.remove('wrong-selected', 'selected');
+                    b.classList.add('correct-selected');
+                }
+            });
+        }
+    }
+
+    // 檢查答案與反饋
+    function checkAnswer() {
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+      const fb = document.getElementById('feedback-area');
+      
+      let isCorrect = false;
+      let userStr = '';
+
+      if(q.type === 'compare2' || q.type === 'pick1' || q.type === 'near1') {
+          isCorrect = userSelection === q.ans;
+          userStr = userSelection;
+      } else if (q.type === 'order3') {
+          userStr = userSelection.join(',');
+          isCorrect = userStr === q.ans;
+      }
+
+      if (records.length <= currentQIndex) {
+        records.push({
+          qIndex: currentQIndex + 1,
+          qObj: q, ansTarget: q.ans, isCorrect1st: isCorrect,
+          userFirstWrong: isCorrect ? null : (q.type==='order3' ? [...userSelection] : userSelection)
+        });
+      }
+
+      fb.classList.remove('hidden', 'feedback-success', 'feedback-warning', 'feedback-danger');
+
+      if (isCorrect) {
+          disableInputs();
+          showCorrectAnswerUI(q);
+          document.getElementById('btn-submit').classList.add('hidden');
+          document.getElementById('btn-next').classList.remove('hidden');
+          fb.className = 'feedback-box feedback-success';
+          fb.innerHTML = `
+            <div style="font-size: 1.15rem; font-weight: bold; margin-bottom: 8px;">${t.praise[Math.floor(Math.random()*t.praise.length)]}</div>
+            <div class="notebook-card"><div class="notebook-title">${t.stepTitle}</div><div class="solution-steps">${getStepHTML(q, currentLang)}</div></div>
+          `;
+      } else {
+          wrongAttempts++;
+
+          // 觸發搖一搖效果
+          const quizCard = document.querySelector('.quiz-card');
+          if (quizCard) {
+            quizCard.classList.remove('shake');
+            void quizCard.offsetWidth; // 強制觸發重繪
+            quizCard.classList.add('shake');
+            setTimeout(() => { quizCard.classList.remove('shake'); }, 450);
+          }
+
+          // 標示錯誤答案為紅色
+          highlightWrongSelection(q);
+
+          if (wrongAttempts < 2) {
+              fb.className = 'feedback-box feedback-warning';
+              
+              let wrongDisplayHtml = '';
+              if (q.type === 'order3') {
+                  const arrow = q.isAsc ? ' < ' : ' > ';
+                  const formattedUserAns = userSelection.map(s => {
+                      let matchedItem = q.items.find(it => numObjToStr(it) === s);
+                      return matchedItem ? formatNumberObj(matchedItem) : s;
+                  }).join(` ${arrow} `);
+                  
+                  wrongDisplayHtml = `
+                    <div style="margin: 10px 0 6px 0; padding: 8px 14px; background: #fff5f5; border: 1.5px solid #fed7d7; border-radius: 8px; color: #9b2c2c; font-size: 0.95rem;">
+                      <strong>${t.prevAnswerWrong}</strong> ${formattedUserAns}
+                    </div>
+                  `;
+                  
+                  // 中階題目答錯後立即重置排序，方便進行第二次嘗試
+                  resetSort();
+              }
+
+              fb.innerHTML = `
+                <strong>${t.encourage[Math.floor(Math.random()*t.encourage.length)]} (${t.attempt} ${wrongAttempts}/2)</strong>
+                ${wrongDisplayHtml}
+                <div style="margin-top:8px; font-size:0.95rem;">${getHintHTML(q, currentLang)}</div>
+              `;
+          } else {
+              disableInputs();
+              showCorrectAnswerUI(q);
+              document.getElementById('btn-submit').classList.add('hidden');
+              document.getElementById('btn-next').classList.remove('hidden');
+              fb.className = 'feedback-box feedback-danger';
+              fb.innerHTML = `
+                <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; color: #9b2c2c;">${t.maxAttemptsMsg}</div>
+                <div class="notebook-card"><div class="notebook-title">${t.stepTitle}</div><div class="solution-steps">${getStepHTML(q, currentLang)}</div></div>
+              `;
+          }
+      }
+    }
+
+    function resetInputsAfterWrong(q) {
+        userSelection = q.type === 'order3' ? [] : null;
+        document.getElementById('btn-submit').disabled = true;
+
+        if (q.type === 'compare2') {
+            document.getElementById('compare-circle').innerText = '?';
+            document.querySelectorAll('.symbol-btn').forEach(b => b.classList.remove('selected'));
+        } else if (q.type === 'order3') {
+            document.querySelectorAll('.sort-slot').forEach(s => { s.innerHTML = ''; s.classList.remove('filled'); });
+            document.querySelectorAll('.sort-source-btn').forEach(b => b.classList.remove('used'));
+        } else {
+            document.querySelectorAll('.mc-btn').forEach(b => b.classList.remove('selected'));
+        }
+    }
+
+    function disableInputs() {
+        // 將按鈕鎖定範圍限制在 interaction-area 內，防止誤鎖導覽與報告按鈕
+        document.querySelectorAll('#interaction-area button').forEach(b => {
+            b.disabled = true;
+        });
+        document.querySelector('.reset-sort-btn')?.remove();
+    }
+
+    // 提示與題解生成邏輯
+    function toFixed2(val) { return Math.round(val * 10000)/10000; }
+
+    function getHintHTML(q, lang) {
+        const isZh = lang === 'zh';
+        if(q.type === 'compare2') {
+            let f = q.items.find(i => i.type === 'frac');
+            if(f) return isZh ? `提示：嘗試將分數 ${numObjToStr(f)} 化為小數 (${f.n} ÷ ${f.d}) 再作比較。` : `Hint: Try converting fraction ${numObjToStr(f)} to decimal (${f.n} ÷ ${f.d}) to compare.`;
+            else return isZh ? `提示：觀察小數點後位數進行比較。` : `Hint: Compare the decimal numbers directly.`;
+        }
+        if(q.type === 'order3') {
+            return isZh ? `提示：先找出整數部分不同，或數值明顯最大/最小的一個，然後再比較剩下的兩個。` : `Hint: Find the obvious outlier first (different whole number or extreme value), then compare the remaining two.`;
+        }
+        if(q.type === 'pick1') {
+            return isZh ? `提示：將所有分數都化為小數，例如分子除以分母，會更容易看出大小。` : `Hint: Convert all fractions to decimals (numerator ÷ denominator) to easily compare values.`;
+        }
+        if(q.type === 'near1') {
+            return isZh ? `提示：計算每個數與 1 的差距 (用大數減小數)。差距越小，代表越接近 1。` : `Hint: Calculate the difference between each number and 1. The smallest difference is closest to 1.`;
+        }
+        return '';
+    }
+
+    function getStepHTML(q, lang) {
+        const isZh = lang === 'zh';
+        let html = '<ol style="padding-left: 20px;">';
+        
+        if (q.type === 'compare2') {
+            let v1 = q.items[0], v2 = q.items[1];
+            if(v1.type === 'frac') html += `<li>${numObjToStr(v1)} = ${v1.n} ÷ ${v1.d} = ${toFixed2(v1.val)}</li>`;
+            if(v2.type === 'frac') html += `<li>${numObjToStr(v2)} = ${v2.n} ÷ ${v2.d} = ${toFixed2(v2.val)}</li>`;
+            let compLabel = isZh ? '比較：' : 'Compare: ';
+            html += `<li>${compLabel}${toFixed2(v1.val)} <strong>${q.ans}</strong> ${toFixed2(v2.val)}</li>`;
+        }
+        else if (q.type === 'order3') {
+            let step1Label = isZh ? '將所有數值化為小數作比較：' : 'Convert all values to decimals for comparison:';
+            html += `<li>${step1Label}<ul>`;
+            q.items.forEach(i => {
+                if(i.type === 'frac') html += `<li>${numObjToStr(i)} = ${toFixed2(i.val)}</li>`;
+                else html += `<li>${i.str}</li>`;
+            });
+            html += `</ul></li>`;
+            let sortedVals = q.sortedItems.map(i => toFixed2(i.val)).join(q.isAsc ? ' < ' : ' > ');
+            let step2Label = isZh ? '依大小排列：' : 'Order by value: ';
+            html += `<li>${step2Label}${sortedVals}</li>`;
+            let finalAnsHTML = q.sortedItems.map(i => formatNumberObj(i)).join(q.isAsc ? ' < ' : ' > ');
+            let step3Label = isZh ? '最終答案：' : 'Final Answer: ';
+            html += `<li>${step3Label}<strong>${finalAnsHTML}</strong></li>`;
+        }
+        else if (q.type === 'pick1') {
+            let step1Label = isZh ? '將選項化為小數：' : 'Convert options to decimals:';
+            html += `<li>${step1Label}<ul>`;
+            q.items.forEach(i => {
+                if(i.type === 'frac') html += `<li>${numObjToStr(i)} = ${toFixed2(i.val)}</li>`;
+                else html += `<li>${i.str}</li>`;
+            });
+            html += `</ul></li>`;
+            let desc = q.isMin ? (isZh ? '最小' : 'smallest') : (isZh ? '最大' : 'greatest');
+            if (isZh) {
+                html += `<li>其中${desc}的數值為 ${toFixed2(q.ansObj.val)}，即 <strong>${formatNumberObj(q.ansObj)}</strong>。</li>`;
+            } else {
+                html += `<li>The ${desc} value is ${toFixed2(q.ansObj.val)}, which is <strong>${formatNumberObj(q.ansObj)}</strong>.</li>`;
+            }
+        }
+        else if (q.type === 'near1') {
+            let step1Label = isZh ? '計算各選項與 1 的距離：' : 'Calculate the distance of each option from 1:';
+            let approxText = isZh ? '約 ' : 'approx. ';
+            html += `<li>${step1Label}<ul>`;
+            q.items.forEach(i => {
+                let diff = Math.abs(i.val - 1);
+                let calc = i.val > 1 ? `${toFixed2(i.val)} - 1` : `1 - ${toFixed2(i.val)}`;
+                html += `<li>${formatNumberObj(i)} (${approxText}${toFixed2(i.val)}): ${calc} = <strong>${toFixed2(diff)}</strong></li>`;
+            });
+            html += `</ul></li>`;
+            let step2Label = isZh ? '距離最小的是 ' : 'The number with the smallest distance to 1 is ';
+            html += `<li>${step2Label}<strong>${formatNumberObj(q.ansObj)}</strong></li>`;
+        }
+        
+        html += '</ol>';
+        return html;
+    }
+
+    function nextQuestion() {
+      currentQIndex++;
+      if (currentQIndex < questions.length) loadQuestion();
+      else showReport();
+    }
+
+    // 報告生成
+    function formatTime(d) {
+        const pad = n => n.toString().padStart(2, '0');
+        return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    
+    function formatDur(start, end) {
+        let s = Math.floor((end - start)/1000);
+        let m = Math.floor(s/60);
+        s = s % 60;
+        return m > 0 ? (currentLang==='zh' ? `${m}分${s}秒`:`${m}m ${s}s`) : (currentLang==='zh'?`${s}秒`:`${s}s`);
+    }
+
+    function formatQTargetForReport(q) {
+        if(q.type === 'compare2') return `${numObjToStr(q.items[0])} [ ${q.ans} ] ${numObjToStr(q.items[1])}`;
+        if(q.type === 'order3') {
+            let arrow = q.isAsc ? '<' : '>';
+            return q.ans.replace(/,/g, ` ${arrow} `);
+        }
+        return q.ans;
+    }
+
+    function formatUserAnsForReport(q, userAns) {
+        if(userAns === null) return '-';
+        if(q.type === 'order3') {
+            let arrow = q.isAsc ? '<' : '>';
+            return userAns.join(` ${arrow} `);
+        }
+        return userAns;
+    }
+
+    function showReport() {
+      const end = new Date();
+      const t = i18n[currentLang];
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.remove('hidden');
+
+      // 填充文字
+      document.getElementById('report-main-title').innerText = t.reportTitle;
+      document.getElementById('lbl-start-time').innerText = t.startTime;
+      document.getElementById('lbl-end-time').innerText = t.endTime;
+      document.getElementById('lbl-duration').innerText = t.duration;
+      document.getElementById('lbl-total-correct').innerText = t.totCorrect;
+      document.getElementById('lbl-accuracy').innerText = t.accuracy;
+      document.getElementById('lbl-correct-title').innerText = t.correctTitle;
+      document.getElementById('lbl-wrong-title').innerText = t.wrongTitle;
+      document.getElementById('lbl-btn-download').innerText = t.btnDL;
+      document.getElementById('lbl-btn-retry').innerText = t.btnRetry;
+      document.getElementById('lbl-btn-home').innerText = t.btnHome;
+
+      // 填充數據
+      document.getElementById('val-start-time').innerText = formatTime(startTimeObj);
+      document.getElementById('val-end-time').innerText = formatTime(end);
+      document.getElementById('val-duration').innerText = formatDur(startTimeObj, end);
+
+      let corrects = records.filter(r => r.isCorrect1st);
+      let wrongs = records.filter(r => !r.isCorrect1st);
+      let acc = Math.round((corrects.length / 10) * 100);
+
+      document.getElementById('val-correct-count').innerText = `${corrects.length} / 10`;
+      document.getElementById('val-accuracy').innerText = `${acc}%`;
+
+      // 列表
+      const cList = document.getElementById('correct-list-container');
+      const wList = document.getElementById('wrong-list-container');
+      cList.innerHTML = ''; wList.innerHTML = '';
+
+      if(corrects.length === 0) cList.innerHTML = '<div style="color:#718096;">-</div>';
+      corrects.forEach((r, i) => {
+          cList.innerHTML += `
+            <div class="item-card item-card-correct">
+                <div class="item-q-title">Q${r.qIndex} [${t.diff[r.qObj.level]}]</div>
+                <div>${formatQTargetForReport(r.qObj)}</div>
+            </div>`;
+      });
+
+      if(wrongs.length === 0) wList.innerHTML = '<div style="color:#38a169;">Perfect!</div>';
+      wrongs.forEach((r, i) => {
+          wList.innerHTML += `
+            <div class="item-card item-card-wrong">
+                <div class="item-q-title">Q${r.qIndex} [${t.diff[r.qObj.level]}]</div>
+                <div style="font-size:0.9rem; color:#4a5568;">${t.yourAns} <span style="text-decoration:line-through;">${formatUserAnsForReport(r.qObj, r.userFirstWrong)}</span></div>
+                <div style="font-size:0.95rem;">${t.correctAns} <strong>${formatQTargetForReport(r.qObj)}</strong></div>
+            </div>`;
+      });
+    }
+
+    function downloadReportImage() {
+      const el = document.getElementById('report-card-to-capture');
+      html2canvas(el, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Math_Report_${new Date().getTime()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    function goHome() {
+      const quizCard = document.querySelector('.quiz-card');
+      if (quizCard) quizCard.classList.remove('shake');
+
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-home').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.remove('hidden');
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      const t = i18n[currentLang];
+      
+      document.getElementById('header-title').innerText = t.title;
+      document.getElementById('lang-toggle-btn').innerText = t.langBtn;
+      document.getElementById('home-subtitle').innerText = t.homeSub;
+      document.getElementById('unit1-card-title').innerText = t.unitTitle;
+      document.getElementById('desc-opt1').innerText = t.unitDesc;
+      
+      if(document.getElementById('lbl-back-btn')) document.getElementById('lbl-back-btn').innerText = t.back;
+
+      if(!document.getElementById('page-quiz').classList.contains('hidden')) {
+          loadQuestion(); // 重新載入以切換語言
+      } else if (!document.getElementById('page-report').classList.contains('hidden')) {
+          showReport();
+      }
+    }
+
+  </script>
+  <script src="https://mathteacher1618.github.io/my_fixes/ipad_fix.js"></script>
+</body>
+</html>
